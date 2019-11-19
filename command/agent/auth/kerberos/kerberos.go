@@ -26,23 +26,23 @@ func NewKerberosAuthMethod(conf *auth.AuthConfig) (auth.AuthMethod, error) {
 	if conf.Config == nil {
 		return nil, errors.New("empty config data")
 	}
-	username, err := toString(conf.Config, "username")
+	username, err := read("username", conf.Config)
 	if err != nil {
 		return nil, err
 	}
-	service, err := toString(conf.Config, "service")
+	service, err := read("service", conf.Config)
 	if err != nil {
 		return nil, err
 	}
-	realm, err := toString(conf.Config, "realm")
+	realm, err := read("realm", conf.Config)
 	if err != nil {
 		return nil, err
 	}
-	keytabPath, err := toString(conf.Config, "keytab_path")
+	keytabPath, err := read("keytab_path", conf.Config)
 	if err != nil {
 		return nil, err
 	}
-	krb5ConfPath, err := toString(conf.Config, "krb5conf_path")
+	krb5ConfPath, err := read("krb5conf_path", conf.Config)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,8 @@ func (k *kerberosMethod) NewCreds() chan struct{} { return nil }
 func (k *kerberosMethod) CredSuccess()            {}
 func (k *kerberosMethod) Shutdown()               {}
 
-func toString(m map[string]interface{}, key string) (string, error) {
+// read reads a key from a map and convert its value to a string.
+func read(key string, m map[string]interface{}) (string, error) {
 	raw, ok := m[key]
 	if !ok {
 		return "", fmt.Errorf("%q is required", key)
